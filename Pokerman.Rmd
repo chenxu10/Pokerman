@@ -1,0 +1,57 @@
+---
+title: "Pokerman_TYTS"
+author: "xushen"
+date: "2017/11/3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Questions: 
+(1)classify the type of pokerman
+(2)Whether it's legendary
+
+
+## Data Wrangling 
+```{r}
+# Load in the data
+Pokerman=read.csv(file="Pokemon.csv",head=TRUE,na.strings=c(""))
+# Get the general information of the dataframe
+str(Pokerman)
+attach(Pokerman)
+```
+## EDA
+```{r}
+# Missing Value Check
+# Check for the missing values and  look how many unique values there are for each variable using the sapply()
+sapply(Pokerman,function(x) sum(is.na(x)))
+# Summarize the unique values 
+sapply(Pokerman, function(x) length(unique(x)))
+# Make a visual take on the missing values
+library(Amelia)
+missmap(Pokerman, main = "Missing values vs observed")
+# Deal with the missing value
+Pokerman$Type.1[is.na(Pokerman$Type.1)]="Poison"
+```
+## BUilding Predicting Models
+```{r}
+# Build a simple logstic regression model to classify the property of legerndary
+# Split the data into training and testing 
+train=Pokerman[1:640,]
+test=Pokerman[641:800,]
+# Fit a logistic regression model on the Legendary Variable to answer the question 2 
+logmodel <- glm(Legendary~HP+Attack+Defense+Sp..Atk+Sp..Def+Speed+Generation,family=binomial(link='logit'),data=train)
+summary(logmodel)
+# Interpret the results of logistic regression model
+# First of all the Attack variable is not statistically significant
+# All the coefficients are positive,which means the higher the attributes, the more likely a poker man is going to be a legendary
+anova(logmodel,test="Chisq")
+```
+## Cross-Validation
+
+## Model Comparison and Diagnostics
+
+## Draw the Conclusion
+
